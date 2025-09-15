@@ -197,7 +197,7 @@ int remove_employee(struct dbheader_t *dbhdr, struct employee_t *employees, char
             if(dbhdr->count == 0)
             {
                 free(employees);
-                employees == NULL;
+                employees = NULL;
                 return STATUS_SUCCESS;
             }
 
