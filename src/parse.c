@@ -10,7 +10,7 @@
 #include "common.h"
 #include "parse.h"
 
-void list_employees(struct dbheader_t *dbhdr, struct employee_t *employees, char *buffer)
+void list_employees(struct dbheader_t *dbhdr, struct employee_t *employees)
 {
     for(int i = 0; i < dbhdr->count; i++)
     {
