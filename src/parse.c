@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <string.h>
+#include <strings.h>
 
 #include "common.h"
 #include "parse.h"
