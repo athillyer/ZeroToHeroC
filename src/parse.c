@@ -163,6 +163,12 @@ int validate_db_header(int fd, struct dbheader_t **headerOut)
 
 int create_db_header(struct dbheader_t **headerOut)
 {
+    if(headerOut == NULL)
+    {
+        printf("Got a NULL pointer from the user\n");
+        return STATUS_ERROR;
+    }
+    
     struct dbheader_t *dbhdr = calloc(1, sizeof(struct dbheader_t));
     if(dbhdr == NULL)
     {
@@ -170,12 +176,12 @@ int create_db_header(struct dbheader_t **headerOut)
         return STATUS_ERROR;
     }
 
-    *headerOut = dbhdr;
-    (*headerOut)->version = 0x1;
-    (*headerOut)->count = 0;
-    (*headerOut)->magic = HEADER_MAGIC;
-    (*headerOut)->filesize = sizeof(struct dbheader_t);
+    dbhdr->version = 0x1;
+    dbhdr->count = 0;
+    dbhdr->magic = HEADER_MAGIC;
+    dbhdr->filesize = sizeof(struct dbheader_t);
 
+    *headerOut = dbhdr;
     return STATUS_SUCCESS;
 }
 
