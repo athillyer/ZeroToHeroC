@@ -37,7 +37,7 @@ int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees, char *
     //assumes you've allocated space for the employee in the employee array
 	char *name = strtok(addstring, ",");
 	char *addr = strtok(NULL, ",");
-	char *hours = strtok(NULL, "");
+	char *hours = strtok(NULL, ",");
 
     if (!name || !addr || !hours) 
     {
@@ -45,8 +45,11 @@ int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees, char *
         return STATUS_ERROR;
     }
 
-	strncpy((*employees)[dbhdr->count-1].name, name, sizeof((*employees)[dbhdr->count-1].name));
-	strncpy((*employees)[dbhdr->count-1].address, addr, sizeof((*employees)[dbhdr->count-1].address));
+    strncpy((*employees)[dbhdr->count-1].name, name, sizeof((*employees)[dbhdr->count-1].name) - 1);
+    (*employees)[dbhdr->count-1].name[sizeof((*employees)[dbhdr->count-1].name) - 1] = '\0';
+
+    strncpy((*employees)[dbhdr->count-1].address, addr, sizeof((*employees)[dbhdr->count-1].address) - 1);
+    (*employees)[dbhdr->count-1].address[sizeof((*employees)[dbhdr->count-1].address) - 1] = '\0';
 
 	(*employees)[dbhdr->count-1].hours = atoi(hours);
 
