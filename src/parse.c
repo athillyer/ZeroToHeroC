@@ -26,22 +26,11 @@ void list_employees(struct dbheader_t *dbhdr, struct employee_t *employees)
 
 int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees, char *addstring)
 {
-    if(addstring == NULL)
+    dbhdr->count++;
+    *employees = realloc(*employees, sizeof(struct employee_t) * dbhdr->count);
+    if(*employees == NULL)
     {
-        printf("Cannot add employee with NULL string\n");
-        return STATUS_ERROR;
-    }
-
-    if(employees == NULL)
-    {
-        printf("Cannot add employee with NULL employee array\n");
-        return STATUS_ERROR;
-    }
-
-    //check for invalid indexing?
-    if(dbhdr->count <= 0)
-    {
-        printf("Cannot add employee with invalid count\n");
+        perror("realloc");
         return STATUS_ERROR;
     }
 
