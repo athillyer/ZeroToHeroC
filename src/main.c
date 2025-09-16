@@ -26,7 +26,12 @@ int main(int argc, char *argv[])
     bool newfile = false;
     bool list = false;
     int dbfd = -1;
-    struct dbheader_t *dbhdr = NULL;
+    struct dbheader_t *dbhdr = calloc(1, sizeof(struct dbheader_t));
+    if(dbhdr == NULL)
+    {
+        perror("calloc");
+        return -1;
+    }
     struct employee_t *employees = NULL;
 
     int c = 0;
