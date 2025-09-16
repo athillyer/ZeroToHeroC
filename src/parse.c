@@ -26,6 +26,12 @@ void list_employees(struct dbheader_t *dbhdr, struct employee_t *employees)
 
 int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees, char *addstring)
 {
+    if(dbhdr == NULL || employees == NULL || addstring == NULL)
+    {
+        printf("Got a NULL pointer from the user\n");
+        return STATUS_ERROR;
+    }
+
     dbhdr->count++;
     *employees = realloc(*employees, sizeof(struct employee_t) * dbhdr->count);
     if(*employees == NULL)
