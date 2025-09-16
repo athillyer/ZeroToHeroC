@@ -163,11 +163,14 @@ int validate_db_header(int fd, struct dbheader_t **headerOut)
 
 int create_db_header(struct dbheader_t **headerOut)
 {
-    if(*headerOut == NULL)
+    struct dbheader_t *dbhdr = calloc(1, sizeof(struct dbheader_t));
+    if(dbhdr == NULL)
     {
+        perror("calloc");
         return STATUS_ERROR;
     }
 
+    *headerOut = dbhdr;
     (*headerOut)->version = 0x1;
     (*headerOut)->count = 0;
     (*headerOut)->magic = HEADER_MAGIC;
