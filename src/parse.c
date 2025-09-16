@@ -37,7 +37,13 @@ int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees, char *
     //assumes you've allocated space for the employee in the employee array
 	char *name = strtok(addstring, ",");
 	char *addr = strtok(NULL, ",");
-	char *hours = strtok(NULL, ",");
+	char *hours = strtok(NULL, "");
+
+    if (!name || !addr || !hours) 
+    {
+        printf("Invalid addstring format. Expected: name,address,hours\n");
+        return STATUS_ERROR;
+    }
 
 	strncpy((*employees)[dbhdr->count-1].name, name, sizeof((*employees)[dbhdr->count-1].name));
 	strncpy((*employees)[dbhdr->count-1].address, addr, sizeof((*employees)[dbhdr->count-1].address));
