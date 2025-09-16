@@ -24,7 +24,7 @@ void list_employees(struct dbheader_t *dbhdr, struct employee_t *employees)
     }
 }
 
-int add_employee(struct dbheader_t *dbhdr, struct employee_t *employees, char *addstring)
+int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees, char *addstring)
 {
     //assumes you've allocated space for the employee in the employee array
 	char *name = strtok(addstring, ",");
@@ -33,10 +33,10 @@ int add_employee(struct dbheader_t *dbhdr, struct employee_t *employees, char *a
 
 	char *hours = strtok(NULL, ",");
 
-	strncpy(employees[dbhdr->count-1].name, name, sizeof(employees[dbhdr->count-1].name));
-	strncpy(employees[dbhdr->count-1].address, addr, sizeof(employees[dbhdr->count-1].address));
+	strncpy((*employees)[dbhdr->count-1].name, name, sizeof((*employees)[dbhdr->count-1].name));
+	strncpy((*employees)[dbhdr->count-1].address, addr, sizeof((*employees)[dbhdr->count-1].address));
 
-	employees[dbhdr->count-1].hours = atoi(hours);
+	(*employees)[dbhdr->count-1].hours = atoi(hours);
 
     return STATUS_SUCCESS;
 }
@@ -168,7 +168,7 @@ int create_db_header(struct dbheader_t **headerOut)
         printf("Got a NULL pointer from the user\n");
         return STATUS_ERROR;
     }
-    
+
     struct dbheader_t *dbhdr = calloc(1, sizeof(struct dbheader_t));
     if(dbhdr == NULL)
     {
