@@ -26,11 +26,28 @@ void list_employees(struct dbheader_t *dbhdr, struct employee_t *employees)
 
 int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees, char *addstring)
 {
+    if(addstring == NULL)
+    {
+        printf("Cannot add employee with NULL string\n");
+        return STATUS_ERROR;
+    }
+
+    if(employees == NULL)
+    {
+        printf("Cannot add employee with NULL employee array\n");
+        return STATUS_ERROR;
+    }
+
+    //check for invalid indexing?
+    if(dbhdr->count <= 0)
+    {
+        printf("Cannot add employee with invalid count\n");
+        return STATUS_ERROR;
+    }
+
     //assumes you've allocated space for the employee in the employee array
 	char *name = strtok(addstring, ",");
-
 	char *addr = strtok(NULL, ",");
-
 	char *hours = strtok(NULL, ",");
 
 	strncpy((*employees)[dbhdr->count-1].name, name, sizeof((*employees)[dbhdr->count-1].name));
