@@ -1,5 +1,74 @@
 #include <kv.h>
 
+// internal private
+size_t hash(char *key, int capacity)
+{
+    size_t hash = 0x13371337deadbeef;
+
+    // not cyrptographically sophisticated
+    while (*key)
+    {
+        hash ^= *key;     // xor
+        hash = hash << 8; // side step
+        hash += *key;
+
+        key++; // increment step
+    }
+
+    return hash % capacity;
+}
+
+// db - pointer to db
+// key - pointer to key value
+// value - pointer to the value at that key
+// returns index if no error, -1 if failure, -2 if not found/capacity met
+int kv_put(kv_t *db, char *key, char *value)
+{
+    if (!db || !key || !value)
+        return -1;
+
+    size_t idx = hash(key, db->capacity);
+
+    for (int i = 0; i < db->capacity - 1; i++)
+    {
+        // key already set, updating
+        // land in slot that is empty -> null, or empty -> TOMBSTONE
+        size_t real_idx = (idx + i) % db->capacity;
+        kv_entry_t *entry = &db->entries[real_idx];
+
+        if (entry->key && entry->key !=TOMBSTONE && !strcmp(entry->key, key))
+        {
+            char *newval = strdup(value); // because we don't know the lifetime.
+            if (!newval)
+                return -1; // failed alloc
+
+            entry->value = newval;
+            return real_idx;
+        }
+
+        // null or tombstone
+        if (!entry->key || entry->key == TOMBSTONE)
+        {
+            char *newval = strdup(value);
+            char *newkey = strdup(key);
+            if (!newval || !newkey)
+            {
+                free(newkey);
+                free(newval);
+                return -1;
+            }
+
+            entry->key = newkey;
+            entry->value = newval;
+            db->count++;
+            return real_idx;
+        }
+
+    }
+
+    return -2; // occupied/no capacity
+}
+
 kv_t *kv_init(size_t capacity)
 {
     if (capacity == 0)
@@ -13,8 +82,9 @@ kv_t *kv_init(size_t capacity)
 
     table->capacity = capacity;
     table->count = 0;
+
     table->entries = calloc(sizeof(kv_entry_t), capacity);
-    if(table->entries == NULL)
+    if (table->entries == NULL)
     {
         return NULL;
     }
