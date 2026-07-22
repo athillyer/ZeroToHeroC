@@ -69,6 +69,32 @@ int kv_put(kv_t *db, char *key, char *value)
     return -2; // occupied/no capacity
 }
 
+char *kv_get(kv_t *db, const char *key)
+{
+    if(!db || !key) return NULL;
+
+    int idx = hash(key, db->capacity);
+
+    for(int i = 0; i < db->capacity -1; i++)
+    {
+        size_t real_idx = (idx + i) % db->capacity;
+        kv_entry_t *entry = &db->entries[real_idx];
+        
+        if(entry->key == NULL)
+        {
+            return NULL;
+        }
+
+        //equal is 0, which would be the only "false" result from strcmp
+        if(entry->key && entry->key !=TOMBSTONE && !strcmp(entry->key, key))
+        {
+            return entry->value;
+        }
+    }
+
+    return NULL;
+}
+
 kv_t *kv_init(size_t capacity)
 {
     if (capacity == 0)
