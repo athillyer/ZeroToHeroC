@@ -39,9 +39,10 @@ int kv_put(kv_t *db, char *key, char *value)
         if (entry->key && entry->key !=TOMBSTONE && !strcmp(entry->key, key))
         {
             char *newval = strdup(value); // because we don't know the lifetime.
-            if (!newval)
+            if (!newval)        
                 return -1; // failed alloc
 
+            free(entry->value);
             entry->value = newval;
             return real_idx;
         }
@@ -69,7 +70,7 @@ int kv_put(kv_t *db, char *key, char *value)
     return -2; // occupied/no capacity
 }
 
-char *kv_get(kv_t *db, const char *key)
+char *kv_get(kv_t *db, char *key)
 {
     if(!db || !key) return NULL;
 
@@ -95,6 +96,32 @@ char *kv_get(kv_t *db, const char *key)
     return NULL;
 }
 
+//-1 error, //-2 no entry, //0 success
+int kv_delete(kv_t *db, char *key)
+{
+    if(!db || !key) return -1;
+    int idx = hash(key, db->capacity);
+
+    for(int i = 0; i < db->capacity -1; i++)
+    {
+        size_t real_idx = (idx + i) %db->capacity;
+        kv_entry_t *entry = &db->entries[real_idx];
+
+        if(entry->key == NULL) return -2;
+
+        if(entry->key && entry->key != TOMBSTONE && !strcmp(entry->key, key))
+        {
+            free(entry->key);
+            free(entry->value);
+            entry->key = TOMBSTONE;
+            entry->value = NULL;
+            return 0;
+        }
+    }
+
+    return -2;
+}
+
 kv_t *kv_init(size_t capacity)
 {
     if (capacity == 0)
@@ -116,4 +143,20 @@ kv_t *kv_init(size_t capacity)
     }
 
     return table;
+}
+
+void kv_free(kv_t *db)
+{
+    for(int i = 0; i < db->capacity -1; i++)
+    {
+        kv_entry_t *entry = &db->entries[i];
+        if(entry->key != TOMBSTONE && entry->key != NULL)
+        {
+            free(entry->key);
+            free(entry->value);
+        }
+    }
+
+    free(db->entries);
+    free(db);
 }

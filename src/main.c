@@ -1,4 +1,5 @@
 #include <kv.h>
+#include <assert.h>
 
 int main()
 {
@@ -9,6 +10,9 @@ int main()
     kv_put(table, "hehe", "haha");
     kv_put(table, "hehe", "hoho");
     kv_put(table, "lala", "hoho");
+    assert(kv_delete(table, "hehe") == 0);
+    assert(kv_get(table, "hehe") == NULL);
+    assert(kv_delete(table, "name") == -2);
 
     // for (int i = 0; i < table->capacity - 1; i++)
     // {
@@ -18,9 +22,11 @@ int main()
     //     }
     // }
 
-    char *val = kv_get(table, "hehe");
-    char *val2 = kv_get(table, "lala");
-    char *val3 = kv_get(table, "doesn't exist");
-    printf("%s %s %s\n", val, val2, val3);
+    // char *val = kv_get(table, "hehe");
+    // char *val2 = kv_get(table, "lala");
+    // char *val3 = kv_get(table, "doesn't exist");
+    // printf("%s %s %s\n", val, val2, val3);
+
+    kv_free(table);
     return 0;
 }
